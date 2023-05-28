@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Voice Call</title>
+  </head>
+  <body>
+    <h1>Voice Call</h1>
+    <button id="callButton">Call</button>
+    <audio id="localAudio" controls></audio>
+    <audio id="remoteAudio" controls></audio>
+
+    <script>
+      // JavaScript code for handling the voice call goes here
+      const callButton = document.getElementById('callButton');
+const localAudio = document.getElementById('localAudio');
+const remoteAudio = document.getElementById('remoteAudio');
+
+let localStream;
+let remoteStream;
+
+callButton.addEventListener('click', () => {
+  // Get local audio stream
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(stream => {
+      localStream = stream;
+      localAudio.srcObject = stream;
+
+      // Create peer connection
+      const peerConnection = new RTCPeerConnection();
+
+      // Add local stream to peer connection
+      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
+
+      // Handle remote stream
+      peerConnection.addEventListener('track', event => {
+        remoteStream = event.streams[0];
+        remoteAudio.srcObject = remoteStream;
+      });
+
+      // Create and send offer
+      peerConnection.createOffer()
+        .then(offer => {
+          peerConnection.setLocalDescription(offer);
+          // Send offer to remote peer
+        });
+
+      // Handle answer from remote peer
+      // ...
+    });
+});
+
+    </script>
+  </body>
+</html>
